@@ -17,6 +17,7 @@ import com.sunzy.mapper.UserMapper;
 import com.sunzy.service.IMenuService;
 import com.sunzy.service.UserService;
 import com.sunzy.utils.TokenUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private static final Log LOG = Log.get();
@@ -63,6 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             // 设置用户的菜单列表
             List<Menu> roleMenus = getRoleMenus(role);
             userDto.setMenus(roleMenus);
+            log.info(roleMenus.toString());
             return userDto;
         } else {
             throw new ServiceException(Constants.CODE_600, "用户名或密码错误");
@@ -71,9 +74,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private List<Menu> getRoleMenus(String role) {
         LambdaQueryWrapper<Role> qw = new LambdaQueryWrapper<>();
-        qw.eq(role!=null, Role::getName, role);
+        qw.eq(role!=null, Role::getFlag, role);
         Role one = roleMapper.selectOne(qw);
-        Integer roleId = one.getId();
+        Integer roleId = one.getId() == null ? 2: one.getId();
 
         // 当前角色的所有菜单id集合
         List<Integer> menuIds = roleMenuMapper.getRoleMenu(roleId);

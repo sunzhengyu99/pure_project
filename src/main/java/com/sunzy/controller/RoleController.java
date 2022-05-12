@@ -48,8 +48,8 @@ public class RoleController {
     }
 
     @GetMapping
-    public List<Role> findAll() {
-        return roleService.list();
+    public R findAll() {
+        return R.success(roleService.list());
     }
 
     @GetMapping("/{id}")
